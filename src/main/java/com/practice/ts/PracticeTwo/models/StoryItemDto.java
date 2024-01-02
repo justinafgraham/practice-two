@@ -3,6 +3,7 @@ package com.practice.ts.PracticeTwo.models;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.jpa.repository.Query;
 
 @Data
 @Entity
@@ -10,17 +11,12 @@ import lombok.Data;
 public class StoryItemDto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int record_id;
-//    @Column(name = "story_id")
+    @Column(name = "id")
+    private Integer _id;
     @JsonAlias("id")
     int story_id;
     String by;
-    int[] kids;
+    Integer[] kids;
     String title;
     String type;
-
-//    public void setScore(final int id) {
-//        System.out.println((char) 27 + "[97;43m" + id + (char) 27 + "[0m");
-//        this.score = id + 111;
-//    }
 }

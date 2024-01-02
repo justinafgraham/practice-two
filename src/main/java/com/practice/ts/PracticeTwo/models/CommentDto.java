@@ -1,5 +1,6 @@
 package com.practice.ts.PracticeTwo.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -10,9 +11,11 @@ import lombok.Data;
 @Table(name = "comments")
 public class CommentDto {
     @Id
-    int id;
+    Integer id;
     String by;
+    @Column(columnDefinition = "text")
     String text;
-    int[] kids;
-    String parent;
+    Integer[] kids;
+    Integer parent;
+    String type;
 }

@@ -16,12 +16,7 @@ public class HomeControllerTest {
     @Autowired
     private HomeController sut;
 
-
-//    public HomeControllerTest(StoryItemsRepo storyItemsRepo) {
-//        this.storyItemsRepo = storyItemsRepo;
-//    }
-
-    int itemCount = 10;
+    final int ITEM_COUNT = 10;
 
     @BeforeEach
     public void setup() {
@@ -30,14 +25,26 @@ public class HomeControllerTest {
 
     @Test
     void testGetRestTemplate() {
-        var actual = sut.getRestTemplate();
-        assertThat(actual.size()).isEqualTo(itemCount);
-    }
-    @Test
-    void testGetTopNewsHttpStream() {
-//        0.7
-        var actual = sut.getTopStoryItems();
-        assertThat(actual.size()).isEqualTo(itemCount);
+        // 2.4, 2.3, 2.2
+        var actual = sut.getWithRestTemplate();
+        assertThat(actual.size()).isEqualTo(ITEM_COUNT);
     }
 
+    @Test
+    void testGetStoryItem() {
+        var item = sut.getStoryItemById();
+        assertThat(item.getStory_id()).isNotNull();
+    }
+
+    @Test
+    void testGetCommentForStory() {
+        var actual = sut.getCommentsForStory();
+        assertThat(actual.size()).isEqualTo(ITEM_COUNT);
+    }
+
+    @Test
+    void testGetTopBy_id() {
+        var actual = sut.getTopNewsItems();
+        assertThat(actual).isNotNull();
+    }
 }

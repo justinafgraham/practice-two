@@ -1,11 +1,13 @@
 package com.practice.ts.PracticeTwo.controllers;
 
+import com.practice.ts.PracticeTwo.models.CommentDto;
+import com.practice.ts.PracticeTwo.models.NewsItem;
 import com.practice.ts.PracticeTwo.models.StoryItemDto;
+import com.practice.ts.PracticeTwo.repositories.CommentRepo;
 import com.practice.ts.PracticeTwo.repositories.StoryItemRepo;
 import com.practice.ts.PracticeTwo.services.HackerNewsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -17,25 +19,44 @@ public class HomeController {
 
     @Autowired
     private StoryItemRepo storyItemRepo;
+    @Autowired
+    private CommentRepo commentRepo;
+
+    @GetMapping("/top-10-news-items")
+    public List<NewsItem> getTopNewsItems() {
+       var stories = storyItemRepo.getTopNewsItems(10);
+       var newsItems = stories.stream()
+               .map(item-> {
+                  var parentId = item.getStory_id();
+                   var comment = commentRepo.getCommentDtoByParent(parentId);
+                   var newsItem = new NewsItem();
+                   newsItem.setComments(comment);
+                   newsItem.setType(item.getType());
+                   newsItem.setTitle(item.getTitle());
+                   return newsItem;
+               })
+               .toList();
+
+        return newsItems;
+    }
 
 
-//    public HomeController(StoryItemsRepo storyItemsRepo) {
-//        this.storyItemsRepo = storyItemsRepo;
-//    }
 
-
-    public List<StoryItemDto> getTopStoryItems() {
-        var result = new HackerNewsService().getTopStoryItems();
+    public List<StoryItemDto> getWithRestTemplate() {
+        var result = new HackerNewsService(commentRepo).getWithRestTemplate();
         storyItemRepo.saveAll(result);
 
         return result;
     }
 
+    public StoryItemDto getStoryItemById() {
+        var item = storyItemRepo.getStoryItemDtoBy_id(1);
 
-    public List<StoryItemDto> getRestTemplate() {
-        var result = new HackerNewsService().getRestTemplate();
-        storyItemRepo.saveAll(result);
+        return item;
+    }
 
-        return result;
+    public List<CommentDto> getCommentsForStory() {
+        List<CommentDto> comments = commentRepo.getCommentDtoByParent(38845510);
+        return comments;
     }
 }
