@@ -13,17 +13,19 @@ import java.util.Objects;
 @Service
 public class HackerNewsService {
     private final String baseurl = "https://hacker-news.firebaseio.com/v0/";
-    private final int TOP_LIMIT = 10;
+    private final int TOP_LIMIT = 500;
     private final CommentRepo commentRepo;
 
+    public RestTemplate restTemplate;
 
-    public HackerNewsService(CommentRepo commentRepo) {
+    public HackerNewsService(CommentRepo commentRepo, RestTemplate restTemplate) {
         this.commentRepo = commentRepo;
+        this.restTemplate = restTemplate;
     }
 
     public List<StoryItemDto> getWithRestTemplate() {
         List<Integer> topIds = Arrays.stream(Objects.requireNonNull(
-                        new RestTemplate()
+                        restTemplate
                                 .getForEntity(baseurl + "topstories.json", Integer[].class)
                                 .getBody()))
                 .limit(TOP_LIMIT)
@@ -32,7 +34,7 @@ public class HackerNewsService {
         List<String> uris = topIds.stream().map(id -> baseurl + "item/" + id + ".json").toList();
 
         List<StoryItemDto> storyItems = uris.parallelStream()
-                .map(uri -> new RestTemplate().getForEntity(uri, StoryItemDto.class).getBody())
+                .map(uri -> restTemplate.getForEntity(uri, StoryItemDto.class).getBody())
                 .peek(item -> integrateStoryComments(item.getKids()))
                 .toList();
 
@@ -45,7 +47,7 @@ public class HackerNewsService {
         List<String> uris = Arrays.stream(commentIds).map(id -> baseurl + "item/" + id + ".json").toList();
         List<CommentDto> comments = uris.parallelStream()
                 .filter(Objects::nonNull)
-                .map(uri -> new RestTemplate().getForEntity(uri, CommentDto.class).getBody())
+                .map(uri -> restTemplate.getForEntity(uri, CommentDto.class).getBody())
                 .limit(TOP_LIMIT)
                 .toList();
 

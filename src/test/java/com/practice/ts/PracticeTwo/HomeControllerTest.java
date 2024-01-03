@@ -12,11 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class HomeControllerTest {
 
-    /*sut system under test */
     @Autowired
     private HomeController sut;
 
-    final int ITEM_COUNT = 10;
+    final int ITEM_COUNT = 500;
 
     @BeforeEach
     public void setup() {
@@ -25,7 +24,7 @@ public class HomeControllerTest {
 
     @Test
     void testGetRestTemplate() {
-        // 2.4, 2.3, 2.2
+        // 25.3, 24,9, 25.5
         var actual = sut.getWithRestTemplate();
         assertThat(actual.size()).isEqualTo(ITEM_COUNT);
     }
